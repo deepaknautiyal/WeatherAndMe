@@ -1,15 +1,26 @@
 package com.deepaknautiyal.weatherandme;
 
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
+
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,14 +29,28 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        String apiKey="18af80f34789e79fdb227a9fbc522fcd";
+        double latitude = 12.903238;
+        double longitude = 77.647602;
+        String forecastUrl = "https://api.forecast.io/forecast/"
+                +apiKey+"/"+latitude+","+longitude;
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(forecastUrl).build();
+        Call call = client.newCall(request);
+
+        try {
+            Response response = call.execute();
+
+            if(response.isSuccessful()){
+                Log.v(TAG,response.body().string());
             }
-        });
+
+        } catch (IOException e) {
+            Log.e(TAG,"Exception caught: "+e);
+        }
+
+
     }
 
     @Override

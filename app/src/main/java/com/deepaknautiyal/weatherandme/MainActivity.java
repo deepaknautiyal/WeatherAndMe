@@ -1,5 +1,8 @@
 package com.deepaknautiyal.weatherandme;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
@@ -36,34 +40,50 @@ public class MainActivity extends AppCompatActivity {
         String forecastUrl = "https://api.forecast.io/forecast/"
                 +apiKey+"/"+latitude+","+longitude;
 
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(forecastUrl).build();
-        Call call = client.newCall(request);
 
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                Log.v(TAG,"Network call failed");
-            }
+        if(inNetworkAvailable()) {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder().url(forecastUrl).build();
+            Call call = client.newCall(request);
 
-            @Override
-            public void onResponse(Response response) throws IOException {
-                try {
-                    Log.v(TAG,response.body().string());
-                    if(response.isSuccessful()){
-                    }
-                    else{
-                        alertUser();
-                    }
-
-                } catch (IOException e) {
-                    Log.e(TAG,"Exception caught: "+e);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    Log.v(TAG, "Network call failed");
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    try {
+                        Log.v(TAG, response.body().string());
+                        if (response.isSuccessful()) {
+                        } else {
+                            alertUser();
+                        }
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Exception caught: " + e);
+                    }
+                }
+            });
+        }
+        else{
+            Toast.makeText(MainActivity.this, R.string.network_unavailable_msg,
+                    Toast.LENGTH_LONG).show();
+        }
 
         Log.d(TAG, "This is running on Main thread");
 
+    }
+
+    private boolean inNetworkAvailable() {
+        boolean isAvailable = false;
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnected()){
+            isAvailable = true;
+        }
+        return isAvailable;
     }
 
     private void alertUser() {

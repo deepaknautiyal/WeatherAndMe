@@ -2,4 +2,5 @@
 <resources>
     <string name="error_title">Alert!</string>
     <string name="error_message">There was an error</string>
+    <string name="network_unavailable_msg">Network unavailable</string>
 </resources>

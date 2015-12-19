@@ -21,11 +21,16 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
+
+    private CurrentWeather mCurrentWeather;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +60,20 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Response response) throws IOException {
                     try {
-                        Log.v(TAG, response.body().string());
+                        String jsonData = response.body().string();
+                        Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
+                            mCurrentWeather = getCurrentData(jsonData);
                         } else {
                             alertUser();
                         }
 
-                    } catch (IOException e) {
-                        Log.e(TAG, "Exception caught: " + e);
+                    }
+                    catch (IOException e) {
+                        Log.e(TAG, "IOException caught: " + e);
+                    }
+                    catch (JSONException e){
+                        Log.e(TAG, "JSONException caught: " + e);
                     }
                 }
             });
@@ -74,6 +85,25 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "This is running on Main thread");
 
+    }
+
+    private CurrentWeather getCurrentData(String jsonData) throws JSONException {
+        CurrentWeather currentWeather = new CurrentWeather();
+
+        JSONObject forecastJson = new JSONObject(jsonData);
+        currentWeather.setTimeZone(forecastJson.getString("timezone"));
+
+        JSONObject currentlyJson = forecastJson.getJSONObject("currently");
+        currentWeather.setTime(currentlyJson.getLong("time"));
+        currentWeather.setChanceOfRain(currentlyJson.getLong("precipProbability"));
+        currentWeather.setHumidity(currentlyJson.getLong("humidity"));
+        currentWeather.setTemprature(currentlyJson.getLong("temperature"));
+        currentWeather.setSummary(currentlyJson.getString("summary"));
+        currentWeather.setIcon(currentlyJson.getString("icon"));
+
+        Log.d(TAG, "Formatted Date Time: " + currentWeather.getFormattedTime());
+
+        return currentWeather;
     }
 
     private boolean inNetworkAvailable() {

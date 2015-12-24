@@ -1,5 +1,7 @@
 package com.deepaknautiyal.weatherandme;
 
+import android.util.Log;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -8,6 +10,8 @@ import java.util.TimeZone;
  * Created by deepak.nautiyal on 12/15/15.
  */
 public class CurrentWeather {
+
+    public static final String TAG = CurrentWeather.class.getSimpleName();
 
     private String mIcon;
     private long mTime;
@@ -78,8 +82,8 @@ public class CurrentWeather {
         mTime = time;
     }
 
-    public long getTemprature() {
-        return mTemprature;
+    public int getTemprature() {
+        return (int) Math.round(mTemprature);
     }
 
     public void setTemprature(long temprature) {
@@ -94,8 +98,9 @@ public class CurrentWeather {
         mHumidity = humidity;
     }
 
-    public long getChanceOfRain() {
-        return mChanceOfRain;
+    public int getChanceOfRain() {
+        double mPrecipPercentage = mChanceOfRain * 100;
+        return (int) Math.round(mPrecipPercentage);
     }
 
     public void setChanceOfRain(long chanceOfRain) {
@@ -116,5 +121,10 @@ public class CurrentWeather {
 
     public void setTimeZone(String timeZone) {
         mTimeZone = timeZone;
+    }
+
+    public int getTempInCelcius(){
+        long mTempInCelcius = (long)((mTemprature-32.00)*(5.00/9.00));
+        return (int) Math.round(mTempInCelcius);
     }
 }

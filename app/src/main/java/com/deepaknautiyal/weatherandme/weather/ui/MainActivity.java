@@ -1,4 +1,4 @@
-package com.deepaknautiyal.weatherandme;
+package com.deepaknautiyal.weatherandme.weather.ui;
 
 import android.Manifest;
 import android.content.Context;
@@ -9,11 +9,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.deepaknautiyal.weatherandme.R;
+import com.deepaknautiyal.weatherandme.weather.weather.CurrentWeather;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;

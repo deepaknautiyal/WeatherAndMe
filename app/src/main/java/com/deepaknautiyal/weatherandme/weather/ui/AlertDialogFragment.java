@@ -1,10 +1,12 @@
-package com.deepaknautiyal.weatherandme;
+package com.deepaknautiyal.weatherandme.weather.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
+
+import com.deepaknautiyal.weatherandme.R;
 
 /**
  * Created by deepak.nautiyal on 12/14/15.

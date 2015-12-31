@@ -1,6 +1,6 @@
-package com.deepaknautiyal.weatherandme;
+package com.deepaknautiyal.weatherandme.weather.weather;
 
-import android.util.Log;
+import com.deepaknautiyal.weatherandme.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

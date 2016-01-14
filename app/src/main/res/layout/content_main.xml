@@ -11,7 +11,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".weather.ui.MainActivity"
     tools:showIn="@layout/activity_main"
-    android:background="#fc970b">
+    android:background="@drawable/bg_gradient">
 
     <TextView
         android:layout_width="wrap_content"
@@ -149,4 +149,32 @@
         android:id="@+id/progressBar"
         android:layout_alignBottom="@+id/refreshImageView"
         android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="HOURLY"
+            android:id="@+id/hourlyButton"
+            android:layout_weight="1"
+            android:background="#40ffffff"
+            android:textColor="#ffffffff" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="7 DAY"
+            android:id="@+id/dailyButton"
+            android:layout_weight="1"
+            android:background="#40ffffff"
+            android:textColor="#ffffffff"
+            android:layout_marginLeft="4dp"/>
+    </LinearLayout>
+
 </RelativeLayout>

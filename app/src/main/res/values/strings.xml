@@ -7,4 +7,6 @@
     <string name="error_alert_dialog_res">error to user</string>
     <string name="network_unavailable_msg">Network unavailable</string>
     <string name="loc_perm_unavailable_msg">App does not have permission to access your location.</string>
+    <string name="title_activity_daily_forecast">DailyForecastActivity</string>
+    <string name="no_daily_forecast">There is no daily forecast available at this time</string>
 </resources>

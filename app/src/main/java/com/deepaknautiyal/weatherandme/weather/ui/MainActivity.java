@@ -2,6 +2,8 @@ package com.deepaknautiyal.weatherandme.weather.ui;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -23,12 +25,16 @@ import android.widget.Toast;
 
 import com.deepaknautiyal.weatherandme.R;
 import com.deepaknautiyal.weatherandme.weather.weather.CurrentWeather;
+import com.deepaknautiyal.weatherandme.weather.weather.DailyWeather;
+import com.deepaknautiyal.weatherandme.weather.weather.Forecast;
+import com.deepaknautiyal.weatherandme.weather.weather.HourlyWeather;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,6 +42,7 @@ import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
@@ -44,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     protected LocationManager locationManager;
     protected LocationListener locationListener;
 
-    private CurrentWeather mCurrentWeather;
+    //private CurrentWeather mCurrentWeather;
+    private Forecast mForecast;
     double latitude;
     double longitude;
 
@@ -155,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                         String jsonData = response.body().string();
                         Log.v(TAG, jsonData);
                         if (response.isSuccessful()) {
-                            mCurrentWeather = getCurrentData(jsonData);
+                            mForecast = parseForecastData(jsonData);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -166,11 +174,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                             alertUser();
                         }
 
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         Log.e(TAG, "IOException caught: " + e);
-                    }
-                    catch (JSONException e){
+                    } catch (JSONException e) {
                         Log.e(TAG, "JSONException caught: " + e);
                     }
                 }
@@ -194,6 +200,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     private void updateDisplay() {
+        CurrentWeather mCurrentWeather = mForecast.getCurrentWeather();
+
         mTimeLabel.setText("At " + mCurrentWeather.getFormattedTime() + " it will be");
         mTempratureLabel.setText(mCurrentWeather.getTempInCelcius()+"");
         mHumidityValue.setText(mCurrentWeather.getHumidity()+"");
@@ -201,6 +209,65 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         mSummary.setText("The weather is " + mCurrentWeather.getSummary());
         Drawable drawable = getResources().getDrawable(mCurrentWeather.getIconId());
         mIconImage.setImageDrawable(drawable);
+    }
+
+    private Forecast parseForecastData(String jsonData) throws JSONException{
+        Forecast forecast = new Forecast();
+
+        forecast.setCurrentWeather(getCurrentData(jsonData));
+        forecast.setDailyWeathers(getDailyWeather(jsonData));
+        forecast.setHourlyWeathers(getHourlyWeather(jsonData));
+
+        return forecast;
+    }
+
+    private HourlyWeather[] getHourlyWeather(String jsonData) throws JSONException{
+        JSONObject forecast = new JSONObject(jsonData);
+        String timezone = forecast.getString("timezone");
+        JSONObject hourlyJson = forecast.getJSONObject("hourly");
+        JSONArray data = hourlyJson.getJSONArray("data");
+
+        HourlyWeather[] hourlyWeathers = new HourlyWeather[data.length()];
+
+        for(int i=0; i< data.length();i++){
+            JSONObject hourData = data.getJSONObject(i);
+            HourlyWeather hour = new HourlyWeather();
+
+            hour.setSummary(hourData.getString("summary"));
+            hour.setTemperature(hourData.getDouble("temperature"));
+            hour.setIcon(hourData.getString("icon"));
+            hour.setTime(hourData.getLong("time"));
+            hour.setTimezone(timezone);
+
+            hourlyWeathers[i] = hour;
+        }
+
+        return hourlyWeathers;
+
+    }
+
+    private DailyWeather[] getDailyWeather(String jsonData) throws JSONException{
+        JSONObject forecast = new JSONObject(jsonData);
+        String timezone = forecast.getString("timezone");
+        JSONObject dailyJson = forecast.getJSONObject("daily");
+        JSONArray data = dailyJson.getJSONArray("data");
+
+        DailyWeather[] dailyWeathers = new DailyWeather[data.length()];
+
+        for(int i=0; i< data.length();i++){
+            JSONObject dayData = data.getJSONObject(i);
+            DailyWeather day = new DailyWeather();
+
+            day.setSummary(dayData.getString("summary"));
+            day.setMaxTemperature(dayData.getDouble("temperatureMax"));
+            day.setIcon(dayData.getString("icon"));
+            day.setTime(dayData.getLong("time"));
+            day.setTimezone(timezone);
+
+            dailyWeathers[i] = day;
+        }
+
+        return dailyWeathers;
     }
 
     private CurrentWeather getCurrentData(String jsonData) throws JSONException {
@@ -282,4 +349,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         Log.d(TAG,"disabled");
 
     }
+
+    @OnClick (R.id.dailyButton)
+    public void startDailyActivity(View view){
+        Intent intent = new Intent(this, DailyForecastActivity.class);
+        startActivity(intent);
+    }
+
 }

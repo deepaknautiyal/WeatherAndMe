@@ -1,15 +1,20 @@
 package com.deepaknautiyal.weatherandme.weather.weather;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by deepak.nautiyal on 12/31/15.
  */
-public class HourlyWeather {
+public class HourlyWeather implements Parcelable {
 
     private long mTime;
     private String mSummary;
     private double mTemperature;
     private String mTimezone;
     private String mIcon;
+
+    public HourlyWeather() { }
 
     public long getTime() {
         return mTime;
@@ -50,4 +55,38 @@ public class HourlyWeather {
     public void setIcon(String icon) {
         mIcon = icon;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(mTime);
+        dest.writeString(mSummary);
+        dest.writeDouble(mTemperature);
+        dest.writeString(mTimezone);
+        dest.writeString(mIcon);
+    }
+
+    private HourlyWeather(Parcel in){
+        mTime=in.readLong();
+        mSummary=in.readString();
+        mTemperature=in.readDouble();
+        mTimezone=in.readString();
+        mIcon=in.readString();
+    }
+
+    public static final Creator<HourlyWeather> CREATOR = new Creator<HourlyWeather>() {
+        @Override
+        public HourlyWeather createFromParcel(Parcel source) {
+            return new HourlyWeather(source);
+        }
+
+        @Override
+        public HourlyWeather[] newArray(int size) {
+            return new HourlyWeather[size];
+        }
+    };
 }

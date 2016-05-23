@@ -10,12 +10,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.deepaknautiyal.weatherandme.R;
 import com.deepaknautiyal.weatherandme.weather.adapters.DayAdapter;
 import com.deepaknautiyal.weatherandme.weather.weather.DailyWeather;
 
 import java.util.Arrays;
+
+import butterknife.Bind;
 
 public class DailyForecastActivity extends ListActivity {
 
@@ -44,4 +49,17 @@ public class DailyForecastActivity extends ListActivity {
 
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        String dayOfTheWeek = mDailyWeather[position].getDayOfTheWeek();
+        String summary = mDailyWeather[position].getSummary();
+        String maxTemp = mDailyWeather[position].getMaxTemperature()+"";
+        String message = String.format("On %s the high temperature will be %s and conditions will be %s",
+                dayOfTheWeek, maxTemp, summary);
+
+        Toast.makeText(this,message,Toast.LENGTH_LONG).show();
+
+    }
 }
